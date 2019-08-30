@@ -28,7 +28,8 @@ contains("^1.0.0", "^1.2.0") === true;
 // if you have two ranges like ^16.3.0 and ^16.8.0
 // and you want the range that matches the theoretical highest version
 // they would be equivalent because they both match up to <17.0.0
-// but you probably want ^16.8.0 because it will not match the lower versions
+// but you probably want ^16.8.0 because you want the
+// range that will only match the higher versions
 highest([...ranges]);
 
 highest([">=1.0.0 <3.0.0", ">=2.0.0 <3.0.0"]) === ">=2.0.0 <3.0.0";
