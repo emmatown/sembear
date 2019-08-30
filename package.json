@@ -1,0 +1,26 @@
+{
+  "name": "sembear",
+  "version": "0.1.0",
+  "main": "dist/sembear.cjs.js",
+  "repository": "https://github.com/mitchellhamilton/sembear",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
+    "preconstruct": "^0.0.90",
+    "typescript": "^3.6.2"
+  },
+  "dependencies": {
+    "@types/semver": "^6.0.1",
+    "semver": "^6.3.0"
+  },
+  "scripts": {
+    "prepublishOnly": "preconstruct build"
+  }
+}
