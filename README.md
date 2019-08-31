@@ -21,17 +21,13 @@ contains(rangeA, rangeB);
 contains("^1.0.0", "^1.0.0") === true;
 contains("^1.0.0", "^1.2.0") === true;
 
-// this will return the range that matches the theoretical highest version
-// if there are multiple ranges that match the theoretical highest version
-// the range that has the smallest range of versions
-// why the smallest range of versions?
-// if you have two ranges like ^16.3.0 and ^16.8.0
-// and you want the range that matches the theoretical highest version
-// they would be equivalent because they both match up to <17.0.0
-// but you probably want ^16.8.0 because you want the
-// range that will only match the higher versions
+// this will return the range that has the highest upper bound
+// if there are multiple ranges with the highest upper bound
+// it will return the range with the highest lower bound
+// if there are multiple ranges with the highest lower bound, one of ones ranges will be returned, which one is returned is undefined
 highest([...ranges]);
 
 highest([">=1.0.0 <3.0.0", ">=2.0.0 <3.0.0"]) === ">=2.0.0 <3.0.0";
 highest(["^16.3.0", "^16.8.0"]) === "^16.8.0";
+highest([">1", ">2"]) === ">2";
 ```
