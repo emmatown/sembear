@@ -1,81 +1,58 @@
 import * as semver from "semver";
+import { upperBound, lowerBound } from "./bounds";
 
-export function contains(rangeA: string, rangeB: string): boolean {
-  throw new Error("not implemented yet");
+// this function assumes that both operators have > OR < but not both
+function compareBounds(boundA: string, boundB: string): 0 | 1 | -1 {
+  let compA = new semver.Comparator(boundA);
+  let compB = new semver.Comparator(boundB);
+  let versionComparison = semver.compare(compA.semver, compB.semver);
+  if (versionComparison !== 0) {
+    return versionComparison;
+  }
+
+  if (compA.operator === compB.operator) {
+    return 0;
+  }
+
+  return /=/.test(compA.operator) ? 1 : -1;
 }
 
-// https://github.com/npm/node-semver/issues/166#issuecomment-245990039
-function hasUpperBound(range: string | semver.Range) {
-  range = new semver.Range(range);
-  if (!range) return false;
-  return (
-    range.set.filter(function(subset) {
-      return subset.some(function(comparator) {
-        return comparator.operator.match(/^</);
-      });
-    }).length === range.set.length
-  );
-}
+// this checks if rangeB is contained within rangeA
+export function contains(
+  rawRangeA: string | semver.Range,
+  rawRangeB: string | semver.Range
+): boolean {
+  let rangeABounds = new semver.Range(rawRangeA).set.map(comparatorSet => {
+    let comparatorSetString = comparatorSet.map(x => x.value).join(" ");
+    return {
+      upperBound: upperBound(comparatorSetString),
+      lowerBound: lowerBound(comparatorSetString)
+    };
+  });
+  let rangeBBounds = new semver.Range(rawRangeB).set.map(comparatorSet => {
+    let comparatorSetString = comparatorSet.map(x => x.value).join(" ");
+    return {
+      upperBound: upperBound(comparatorSetString),
+      lowerBound: lowerBound(comparatorSetString)
+    };
+  });
+  return rangeBBounds.every(bBounds => {
+    return rangeABounds.some(aBounds => {
+      let isInUpperBound: boolean;
+      if (aBounds.upperBound === null) {
+        isInUpperBound = true;
+      } else if (bBounds.upperBound === null) {
+        isInUpperBound = false;
+      } else {
+        isInUpperBound =
+          compareBounds(aBounds.upperBound, bBounds.upperBound) >= 0;
+      }
 
-// https://github.com/npm/node-semver/issues/166#issuecomment-246040973
-function upperBound(range: string | semver.Range) {
-  range = new semver.Range(range);
-  if (!hasUpperBound(range)) return null;
-  return range.set
-    .map(function(subset) {
-      return subset.filter(function(comparator) {
-        return /^</.test(comparator.operator);
-      });
-    })
-    .map(function(subset) {
-      return subset.sort(function(a, b) {
-        return semver.compare(a.semver, b.semver);
-      })[0];
-    })
-    .sort(function(a, b) {
-      return semver.rcompare(a.semver, b.semver);
-    })
-    .slice(0, 1)
-    .map(function(comparator) {
-      return comparator.value;
-    })[0];
-}
-
-// https://github.com/npm/node-semver/issues/166#issuecomment-245990039
-function hasLowerBound(range: string | semver.Range) {
-  range = new semver.Range(range);
-  if (!range) return false;
-  return (
-    range.set.filter(function(subset) {
-      return subset.some(function(comparator) {
-        return comparator.operator.match(/^>/);
-      });
-    }).length === range.set.length
-  );
-}
-
-// https://github.com/npm/node-semver/issues/166#issuecomment-246040973
-function lowerBound(range: string | semver.Range) {
-  range = new semver.Range(range);
-  if (!hasLowerBound(range)) return "0.0.0";
-  return range.set
-    .map(function(subset) {
-      return subset.filter(function(comparator) {
-        return /^>/.test(comparator.operator);
-      });
-    })
-    .map(function(subset) {
-      return subset.sort(function(a, b) {
-        return semver.compare(a.semver, b.semver);
-      })[0];
-    })
-    .sort(function(a, b) {
-      return semver.rcompare(a.semver, b.semver);
-    })
-    .slice(0, 1)
-    .map(function(comparator) {
-      return comparator.value;
-    })[0];
+      let isInLowerBound =
+        compareBounds(aBounds.lowerBound, bBounds.lowerBound) <= 0;
+      return isInUpperBound && isInLowerBound;
+    });
+  });
 }
 
 export function highest(rawRanges: string[]): string {
