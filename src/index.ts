@@ -64,17 +64,8 @@ export function highest(rawRanges: string[]): string {
     };
   });
   rangesWithBounds.sort((a, b) => {
-    if (a.upperBound === null && b.upperBound === null) {
-      return 0;
-    }
-    if (a.upperBound === null) {
-      return 1;
-    }
-    if (b.upperBound === null) {
-      return -1;
-    }
-    let compA = new semver.Comparator(a.upperBound);
-    let compB = new semver.Comparator(b.upperBound);
+    let compA = new semver.Comparator(a.lowerBound);
+    let compB = new semver.Comparator(b.lowerBound);
     if (semver.eq(compA.semver, compB.semver)) {
       if (compA.operator === compB.operator) {
         return 0;
@@ -94,8 +85,17 @@ export function highest(rawRanges: string[]): string {
   }
 
   rangesWithHighestUpperBound.sort((a, b) => {
-    let compA = new semver.Comparator(a.lowerBound);
-    let compB = new semver.Comparator(b.lowerBound);
+    if (a.upperBound === null && b.upperBound === null) {
+      return 0;
+    }
+    if (a.upperBound === null) {
+      return 1;
+    }
+    if (b.upperBound === null) {
+      return -1;
+    }
+    let compA = new semver.Comparator(a.upperBound);
+    let compB = new semver.Comparator(b.upperBound);
     if (semver.eq(compA.semver, compB.semver)) {
       if (compA.operator === compB.operator) {
         return 0;
