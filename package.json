@@ -15,7 +15,7 @@
     "@types/js-combinatorics": "^0.5.31",
     "jest": "^24.9.0",
     "js-combinatorics": "^0.5.4",
-    "preconstruct": "^0.0.90",
+    "preconstruct": "^0.1.2",
     "typescript": "^3.6.2"
   },
   "dependencies": {
