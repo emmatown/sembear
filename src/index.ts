@@ -1,8 +1,53 @@
 import * as semver from "semver";
 import { upperBound, lowerBound } from "./bounds";
 
+function getBoundsForRange(range: string | semver.Range) {
+  return new semver.Range(range).set.map(comparatorSet => {
+    let comparatorSetString = comparatorSet.map(x => x.value).join(" ");
+    return {
+      upperBound: upperBound(comparatorSetString),
+      lowerBound: lowerBound(comparatorSetString)
+    };
+  });
+}
+
+export function upperBoundOfRangeAWithinBoundsOfB(
+  devDepRange: string | semver.Range,
+  peerDepRange: string | semver.Range
+) {
+  let devDepRangeBounds = getBoundsForRange(devDepRange);
+  let peerDepRangeBounds = getBoundsForRange(peerDepRange);
+
+  return peerDepRangeBounds.every(peerDepRangeBound => {
+    return devDepRangeBounds.some(devDepRangeBound => {
+      return (
+        compareBounds(
+          devDepRangeBound.upperBound,
+          peerDepRangeBound.lowerBound
+        ) >= 0 &&
+        compareBounds(
+          peerDepRangeBound.upperBound,
+          devDepRangeBound.lowerBound
+        ) >= 0
+      );
+    });
+  });
+}
+
 // this function assumes that both operators have > OR < but not both
-function compareBounds(boundA: string, boundB: string): 0 | 1 | -1 {
+export function compareBounds(
+  boundA: string | null,
+  boundB: string | null
+): 0 | 1 | -1 {
+  if (boundA === null && boundB === null) {
+    return 0;
+  }
+  if (boundA === null) {
+    return 1;
+  }
+  if (boundB === null) {
+    return -1;
+  }
   let compA = new semver.Comparator(boundA);
   let compB = new semver.Comparator(boundB);
   let versionComparison = semver.compare(compA.semver, compB.semver);
@@ -22,31 +67,12 @@ export function contains(
   rawRangeA: string | semver.Range,
   rawRangeB: string | semver.Range
 ): boolean {
-  let rangeABounds = new semver.Range(rawRangeA).set.map(comparatorSet => {
-    let comparatorSetString = comparatorSet.map(x => x.value).join(" ");
-    return {
-      upperBound: upperBound(comparatorSetString),
-      lowerBound: lowerBound(comparatorSetString)
-    };
-  });
-  let rangeBBounds = new semver.Range(rawRangeB).set.map(comparatorSet => {
-    let comparatorSetString = comparatorSet.map(x => x.value).join(" ");
-    return {
-      upperBound: upperBound(comparatorSetString),
-      lowerBound: lowerBound(comparatorSetString)
-    };
-  });
+  let rangeABounds = getBoundsForRange(rawRangeA);
+  let rangeBBounds = getBoundsForRange(rawRangeB);
   return rangeBBounds.every(bBounds => {
     return rangeABounds.some(aBounds => {
-      let isInUpperBound: boolean;
-      if (aBounds.upperBound === null) {
-        isInUpperBound = true;
-      } else if (bBounds.upperBound === null) {
-        isInUpperBound = false;
-      } else {
-        isInUpperBound =
-          compareBounds(aBounds.upperBound, bBounds.upperBound) >= 0;
-      }
+      let isInUpperBound =
+        compareBounds(aBounds.upperBound, bBounds.upperBound) >= 0;
 
       let isInLowerBound =
         compareBounds(aBounds.lowerBound, bBounds.lowerBound) <= 0;

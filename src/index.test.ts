@@ -1,5 +1,21 @@
-import { highest, contains } from "./index";
+import { highest, contains, upperBoundOfRangeAWithinBoundsOfB } from "./index";
 import { permutation } from "js-combinatorics";
+
+describe("upperBoundOfRangeAWithinBoundsOfB", () => {
+  test.each([["^16.11.0", "^16.9.0"], ["*", "^10.0.0"]])(
+    "the upper bound of %s is within the bounds of %s",
+    (devDep, peerDep) => {
+      expect(upperBoundOfRangeAWithinBoundsOfB(devDep, peerDep)).toBe(true);
+    }
+  );
+
+  test.each([["^16.11.0", "^17.0.0"], ["1", "2"], ["2", "1"]])(
+    "the upper bound of %s is not within the bounds of %s",
+    (devDep, peerDep) => {
+      expect(upperBoundOfRangeAWithinBoundsOfB(devDep, peerDep)).toBe(false);
+    }
+  );
+});
 
 describe("contains", () => {
   test.each([

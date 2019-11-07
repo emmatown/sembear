@@ -10,7 +10,8 @@ describe("lowerBound", () => {
     ["5.0.0", ">=5.0.0"],
     [">=1.2.3 <5.0.0", ">=1.2.3"],
     ["6.7.8", ">=6.7.8"],
-    ["1.2.4 - 5.1.0", ">=1.2.4"]
+    ["1.2.4 - 5.1.0", ">=1.2.4"],
+    ["*", "0.0.0"]
   ])("the lower bound of %s is %s", (range, bound) => {
     expect(lowerBound(range)).toBe(bound);
   });
@@ -26,9 +27,10 @@ describe("upperBound", () => {
     ["5.0.0", "<=5.0.0"],
     [">=1.2.3 <5.0.0", "<5.0.0"],
     ["6.7.8", "<=6.7.8"],
-    ["1.2.4 - 5.1.0", "<=5.1.0"]
+    ["1.2.4 - 5.1.0", "<=5.1.0"],
+    ["*", null]
   ] as [string, string | null][])(
-    "the lower bound of %s is %s",
+    "the upper bound of %s is %s",
     (range, bound) => {
       expect(upperBound(range)).toBe(bound);
     }
