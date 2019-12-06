@@ -82,13 +82,16 @@ export function contains(
 }
 
 export function highest(rawRanges: string[]): string {
-  let rangesWithBounds = rawRanges.map(rawRange => {
-    return {
-      range: rawRange,
-      upperBound: upperBound(rawRange),
-      lowerBound: lowerBound(rawRange)
-    };
-  });
+  let rangesWithBounds = rawRanges
+    .map(rawRange => {
+      return {
+        range: rawRange,
+        upperBound: upperBound(rawRange),
+        lowerBound: lowerBound(rawRange)
+      };
+    })
+    // @ts-ignore
+    .sort((a, b) => a.range > b.range);
   rangesWithBounds.sort((a, b) => {
     let compA = new semver.Comparator(a.lowerBound);
     let compB = new semver.Comparator(b.lowerBound);
