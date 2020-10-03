@@ -18,7 +18,7 @@ export function upperBoundOfRangeAWithinBoundsOfB(
   let devDepRangeBounds = getBoundsForRange(devDepRange);
   let peerDepRangeBounds = getBoundsForRange(peerDepRange);
 
-  return peerDepRangeBounds.every(peerDepRangeBound => {
+  return peerDepRangeBounds.some(peerDepRangeBound => {
     return devDepRangeBounds.some(devDepRangeBound => {
       return (
         compareBounds(

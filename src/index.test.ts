@@ -4,7 +4,8 @@ import { permutation } from "js-combinatorics";
 describe("upperBoundOfRangeAWithinBoundsOfB", () => {
   test.each([
     ["^16.11.0", "^16.9.0"],
-    ["*", "^10.0.0"]
+    ["*", "^10.0.0"],
+    ["^7.10.0", "6 || 7"]
   ])("the upper bound of %s is within the bounds of %s", (devDep, peerDep) => {
     expect(upperBoundOfRangeAWithinBoundsOfB(devDep, peerDep)).toBe(true);
   });
