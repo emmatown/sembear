@@ -2,11 +2,11 @@ import * as semver from "semver";
 import { upperBound, lowerBound } from "./bounds";
 
 function getBoundsForRange(range: string | semver.Range) {
-  return new semver.Range(range).set.map(comparatorSet => {
-    let comparatorSetString = comparatorSet.map(x => x.value).join(" ");
+  return new semver.Range(range).set.map((comparatorSet) => {
+    let comparatorSetString = comparatorSet.map((x) => x.value).join(" ");
     return {
       upperBound: upperBound(comparatorSetString),
-      lowerBound: lowerBound(comparatorSetString)
+      lowerBound: lowerBound(comparatorSetString),
     };
   });
 }
@@ -18,8 +18,8 @@ export function upperBoundOfRangeAWithinBoundsOfB(
   let devDepRangeBounds = getBoundsForRange(devDepRange);
   let peerDepRangeBounds = getBoundsForRange(peerDepRange);
 
-  return peerDepRangeBounds.some(peerDepRangeBound => {
-    return devDepRangeBounds.some(devDepRangeBound => {
+  return peerDepRangeBounds.some((peerDepRangeBound) => {
+    return devDepRangeBounds.some((devDepRangeBound) => {
       return (
         compareBounds(
           devDepRangeBound.upperBound,
@@ -69,8 +69,8 @@ export function contains(
 ): boolean {
   let rangeABounds = getBoundsForRange(rawRangeA);
   let rangeBBounds = getBoundsForRange(rawRangeB);
-  return rangeBBounds.every(bBounds => {
-    return rangeABounds.some(aBounds => {
+  return rangeBBounds.every((bBounds) => {
+    return rangeABounds.some((aBounds) => {
       let isInUpperBound =
         compareBounds(aBounds.upperBound, bBounds.upperBound) >= 0;
 
@@ -82,16 +82,13 @@ export function contains(
 }
 
 export function highest(rawRanges: string[]): string {
-  let rangesWithBounds = rawRanges
-    .map(rawRange => {
-      return {
-        range: rawRange,
-        upperBound: upperBound(rawRange),
-        lowerBound: lowerBound(rawRange)
-      };
-    })
-    // @ts-ignore
-    .sort((a, b) => a.range > b.range);
+  let rangesWithBounds = rawRanges.map((rawRange) => {
+    return {
+      range: rawRange,
+      upperBound: upperBound(rawRange),
+      lowerBound: lowerBound(rawRange),
+    };
+  });
   rangesWithBounds.sort((a, b) => {
     let compA = new semver.Comparator(a.lowerBound);
     let compB = new semver.Comparator(b.lowerBound);
@@ -104,16 +101,17 @@ export function highest(rawRanges: string[]): string {
     return semver.compare(compA.semver, compB.semver);
   });
 
-  let highestUpperBound =
-    rangesWithBounds[rangesWithBounds.length - 1].upperBound;
-  let rangesWithHighestUpperBound = rangesWithBounds.filter(
-    x => x.upperBound === highestUpperBound
+  let highestLowerBound =
+    rangesWithBounds[rangesWithBounds.length - 1].lowerBound;
+  let rangesWithHighestLowerBound = rangesWithBounds.filter(
+    (x) => x.lowerBound === highestLowerBound
   );
-  if (rangesWithHighestUpperBound.length === 1) {
-    return rangesWithHighestUpperBound[0].range;
+
+  if (rangesWithHighestLowerBound.length === 1) {
+    return rangesWithHighestLowerBound[0].range;
   }
 
-  rangesWithHighestUpperBound.sort((a, b) => {
+  rangesWithHighestLowerBound.sort((a, b) => {
     if (a.upperBound === null && b.upperBound === null) {
       return 0;
     }
@@ -133,6 +131,14 @@ export function highest(rawRanges: string[]): string {
     }
     return semver.compare(compA.semver, compB.semver);
   });
-  return rangesWithHighestUpperBound[rangesWithHighestUpperBound.length - 1]
-    .range;
+
+  let highestUpperBound =
+    rangesWithHighestLowerBound[rangesWithHighestLowerBound.length - 1]
+      .upperBound;
+
+  let rangesWithHighestUpperBound = rangesWithHighestLowerBound.filter(
+    (x) => x.upperBound === highestUpperBound
+  );
+
+  return rangesWithHighestUpperBound.map((x) => x.range).sort()[0];
 }
