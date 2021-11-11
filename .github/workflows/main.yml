@@ -7,12 +7,12 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
 
-      - name: Set Node.js 12.x
-        uses: actions/setup-node@master
+      - name: Set Node.js 14.x
+        uses: actions/setup-node@main
         with:
-          node-version: 12.x
+          node-version: 14.x
 
       - name: Install Yarn
         run: npm install --global yarn
