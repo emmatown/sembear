@@ -8,9 +8,9 @@
     "dist"
   ],
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.3.3",
+    "@babel/core": "^7.22.10",
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-typescript": "^7.22.5",
     "@types/jest": "^24.0.18",
     "@types/js-combinatorics": "^0.5.31",
     "jest": "^24.9.0",
