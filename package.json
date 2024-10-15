@@ -13,13 +13,13 @@
     "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^24.0.18",
     "@types/js-combinatorics": "^0.5.31",
+    "@types/semver": "^7.3.9",
     "jest": "^24.9.0",
     "js-combinatorics": "^0.5.4",
     "preconstruct": "^0.1.2",
     "typescript": "^3.6.2"
   },
   "dependencies": {
-    "@types/semver": "^7.3.9",
     "semver": "^7.3.5"
   },
   "scripts": {
