@@ -1,7 +1,7 @@
 import * as semver from "semver";
 import { upperBound, lowerBound } from "./bounds";
 
-function getBoundsForRange(range: string | semver.Range) {
+function getBoundsForRange(range: string) {
   return new semver.Range(range).set.map((comparatorSet) => {
     let comparatorSetString = comparatorSet.map((x) => x.value).join(" ");
     return {
@@ -12,8 +12,8 @@ function getBoundsForRange(range: string | semver.Range) {
 }
 
 export function upperBoundOfRangeAWithinBoundsOfB(
-  devDepRange: string | semver.Range,
-  peerDepRange: string | semver.Range
+  devDepRange: string,
+  peerDepRange: string
 ) {
   let devDepRangeBounds = getBoundsForRange(devDepRange);
   let peerDepRangeBounds = getBoundsForRange(peerDepRange);
@@ -63,10 +63,7 @@ export function compareBounds(
 }
 
 // this checks if rangeB is contained within rangeA
-export function contains(
-  rawRangeA: string | semver.Range,
-  rawRangeB: string | semver.Range
-): boolean {
+export function contains(rawRangeA: string, rawRangeB: string): boolean {
   let rangeABounds = getBoundsForRange(rawRangeA);
   let rangeBBounds = getBoundsForRange(rawRangeB);
   return rangeBBounds.every((bBounds) => {
